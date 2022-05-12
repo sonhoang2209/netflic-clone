@@ -9,7 +9,7 @@ interface Inputs {
 }
 
 function Login() {
-  const [login, setLogin] = useState(false)
+  const [login, setLogin] = useState<boolean>(false)
   const { signIn, signUp } = useAuth()
 
   const {
