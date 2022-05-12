@@ -1,14 +1,15 @@
-import { useState } from 'react'
 import Head from 'next/head'
+import { useState } from 'react'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import useAuth from '../hooks/useAuth'
-type Inputs = {
+
+interface Inputs {
   email: string
   password: string
 }
 
-function login() {
-  const [login, setLogin] = useState<boolean>(false)
+function Login() {
+  const [login, setLogin] = useState(false)
   const { signIn, signUp } = useAuth()
 
   const {
@@ -19,16 +20,18 @@ function login() {
   } = useForm<Inputs>()
 
   const onSubmit: SubmitHandler<Inputs> = async data => {
+    console.log(data)
     if (login) {
       await signIn(data.email, data.password)
     } else {
       await signUp(data.email, data.password)
     }
   }
+
   return (
     <div className="relative flex h-screen w-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent">
       <Head>
-        <title>Login - Netfilx</title>
+        <title>Netflix</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <form
@@ -41,9 +44,8 @@ function login() {
             <input
               type="email"
               placeholder="Email"
-              className="input"
+              className={`input ${errors.email && 'border-b-2 border-orange-500'}`}
               {...register('email', { required: true })}
-              // className={`input ${errors.email && 'border-b-2 border-orange-500'}`}
             />
             {errors.email && (
               <p className="p-1 text-[13px] font-light  text-orange-500">
@@ -54,10 +56,9 @@ function login() {
           <label className="inline-block w-full">
             <input
               type="password"
-              placeholder="Password"
-              className="input"
               {...register('password', { required: true })}
-              // className={`input ${errors.password && 'border-b-2 border-orange-500'}`}
+              placeholder="Password"
+              className={`input ${errors.password && 'border-b-2 border-orange-500'}`}
             />
             {errors.password && (
               <p className="p-1 text-[13px] font-light  text-orange-500">
@@ -68,14 +69,18 @@ function login() {
         </div>
         <button
           className="w-full rounded bg-[#E50914] py-3 font-semibold"
-          type="submit"
           onClick={() => setLogin(true)}
+          type="submit"
         >
           Sign In
         </button>
         <div className="text-[gray]">
           New to Netflix?{' '}
-          <button className="cursor-pointer text-white hover:underline" type="submit">
+          <button
+            className="cursor-pointer text-white hover:underline"
+            onClick={() => setLogin(false)}
+            type="submit"
+          >
             Sign up now
           </button>
         </div>
@@ -84,4 +89,4 @@ function login() {
   )
 }
 
-export default login
+export default Login
