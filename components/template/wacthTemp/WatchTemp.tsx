@@ -6,8 +6,6 @@ import Header from '../../organisms/header/Header'
 import WacthVideo from '../../organisms/wacthVideo/WacthVideo'
 import filmAPI from '../../../pages/api/axios/filmAPI'
 import { Movie } from '../../../untils/typings'
-import { AiFillStar } from 'react-icons/ai'
-import StarRate from '../../atoms/StarRate'
 import FilmItem from '../../molecules/FilmItem'
 import MovieInfor from '../../molecules/MovieInfor/MovieInfor'
 
