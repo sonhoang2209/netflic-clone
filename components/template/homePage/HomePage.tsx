@@ -5,6 +5,15 @@ import Banner from '../../organisms/banner/Banner'
 import requests from '../../../untils/requests'
 import { Movie } from '../../../untils/typings'
 import { GetServerSideProps } from 'next'
+import { getProducts, Product } from '@stripe/firestore-stripe-payments'
+import payments from '../../../lib/stripe'
+import Row from '../../organisms/row/Row'
+import Plans from '../../organisms/plans/Plans'
+import useAuth from '../../../hooks/useAuth'
+import { useRecoilValue } from 'recoil'
+import { modalState } from '../../atoms/modalAtom'
+import useSubscription from '../../../hooks/useSubcription'
+import Modal from '../../organisms/modal/Modal'
 
 export interface Props {
   netflixOriginals: Movie[]
@@ -15,6 +24,7 @@ export interface Props {
   horrorMovies: Movie[]
   romanceMovies: Movie[]
   documentaries: Movie[]
+  products: Product[]
 }
 
 function HomePage({
@@ -25,18 +35,44 @@ function HomePage({
   horrorMovies,
   romanceMovies,
   topRated,
-  trendingNow
+  trendingNow,
+  products
 }: Props) {
-  console.log(netflixOriginals)
+  const { loading, user } = useAuth()
+  const showModal = useRecoilValue(modalState)
+  const subcription = useSubscription(user)
+
+  if (loading || subcription === null) return <></>
+
+  if (!subcription) return <Plans products={products} />
 
   return (
-    <div className="relative h-screen bg-gradient-to-b from-gray-900/10 to-[#010511] lg:h-[140vh]">
+    <div
+      className={`relative h-screen bg-gradient-to-b from-gray-900/10 to-[#010511] lg:h-[140vh] ${
+        showModal && '!h-screen overflow-hidden'
+      }`}
+    >
       <Head>
         <title>Home - Netfilx</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <Header />
-      <Banner netflixOriginals={netflixOriginals} />
+      <main className="relative pl-4 pb-24 lg:space-y-24 lg:pl-16">
+        <Banner netflixOriginals={netflixOriginals} />
+        <section className="md:space-y-24">
+          <Row title="Trending Now" movies={trendingNow} />
+          <Row title="Top Rated" movies={topRated} />
+          <Row title="Action Thrillers" movies={actionMovies} />
+
+          {/* {list.length > 0 && <Row title="My List" movies={list} />} */}
+
+          <Row title="Comedies" movies={comedyMovies} />
+          <Row title="Scary Movies" movies={horrorMovies} />
+          <Row title="Romance Movies" movies={romanceMovies} />
+          <Row title="Documentaries" movies={documentaries} />
+        </section>
+      </main>
+      {showModal && <Modal />}
     </div>
   )
 }
@@ -44,12 +80,12 @@ function HomePage({
 export default HomePage
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  // const products = await getProducts(payments, {
-  //   includePrices: true,
-  //   activeOnly: true
-  // })
-  //   .then(res => res)
-  //   .catch(error => console.log(error.message))
+  const products = await getProducts(payments, {
+    includePrices: true,
+    activeOnly: true
+  })
+    .then((res: any) => res)
+    .catch((error: { message: any }) => console.log(error.message))
 
   const [
     netflixOriginals,
@@ -80,7 +116,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
       comedyMovies: comedyMovies.results,
       horrorMovies: horrorMovies.results,
       romanceMovies: romanceMovies.results,
-      documentaries: documentaries.results
+      documentaries: documentaries.results,
+      products
     }
   }
 }

@@ -84,8 +84,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
     includePrices: true,
     activeOnly: true
   })
-    .then(res => res)
-    .catch(error => console.log(error.message))
+    .then((res: any) => res)
+    .catch((error: { message: any }) => console.log(error.message))
 
   const [
     netflixOriginals,
