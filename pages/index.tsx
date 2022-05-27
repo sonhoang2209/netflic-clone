@@ -62,7 +62,7 @@ const Home: NextPage<Props> = ({
         <section className="md:space-y-24">
           <Row title="Trending Now" movies={trendingNow} />
           <Row title="Top Rated" movies={topRated} />
-          <Row title="Action Thrillers" movies={actionMovies} />
+
 
           {/* {list.length > 0 && <Row title="My List" movies={list} />} */}
 
